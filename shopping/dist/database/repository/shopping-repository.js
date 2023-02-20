@@ -10,20 +10,57 @@ class ShoppingRepository {
     // payment
     async Orders(customerId) {
         try {
-            const orders = await models_1.OrderModel.find({ customerId }).populate('items.product');
+            const orders = await models_1.OrderModel.find({ customerId });
             return orders;
         }
         catch (err) {
             throw new app_errors_2.APIError('API Error', app_errors_1.STATUS_CODES.INTERNAL_ERROR, 'Unable to Find Orders', true, '', true);
         }
     }
+    async AddCartItem(customerId, item, qty, isRemove) {
+        try {
+            const cart = await models_1.CartModel.findOne({ customerId: customerId });
+            const { _id } = item;
+            if (cart) {
+                let isExist = false;
+                let cartItems = cart.items;
+                if (cartItems.length > 0) {
+                    cartItems.map((item) => {
+                        if (item.product._id.toString() === _id.toString()) {
+                            if (isRemove) {
+                                cartItems.splice(cartItems.indexOf(item), 1);
+                            }
+                            else {
+                                item.unit = qty;
+                            }
+                            isExist = true;
+                        }
+                    });
+                }
+                if (!isExist && !isRemove) {
+                    cartItems.push({ product: { ...item }, unit: qty });
+                }
+                cart.items = cartItems;
+                return cart.save();
+            }
+            else {
+                return await models_1.CartModel.create({
+                    customerId,
+                    items: [{ product: { ...item }, unit: qty }]
+                });
+            }
+        }
+        catch (err) {
+            throw new app_errors_2.APIError('API Error', app_errors_1.STATUS_CODES.INTERNAL_ERROR, 'Unable to Create Customer', true, '', true);
+        }
+    }
     async CreateNewOrder(customerId, txnId) {
         //check transaction for payment Status
         try {
-            const profile = await models_1.CustomerModel.findById(customerId).populate('cart.product');
-            if (profile) {
+            const cart = await models_1.CartModel.findOne({ customerId: customerId });
+            if (cart) {
                 let amount = 0;
-                let cartItems = profile.cart;
+                let cartItems = cart.items;
                 if (cartItems.length > 0) {
                     //process Order
                     cartItems.map((item) => {
@@ -38,11 +75,9 @@ class ShoppingRepository {
                         status: 'received',
                         items: cartItems
                     });
-                    profile.cart = [];
-                    order.populate('items.product');
+                    cart.items = [];
                     const orderResult = await order.save();
-                    profile.orders.push(orderResult);
-                    await profile.save();
+                    await cart.save();
                     return orderResult;
                 }
             }

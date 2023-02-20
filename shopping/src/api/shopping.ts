@@ -1,14 +1,13 @@
 import ShoppingService from "../services/shopping-service";
-import UserService from '../services/customer-service';
 import UserAuth from './middlewares/auth';
 import express, {Request, Response, NextFunction} from 'express'
 
 export const shopping = (app:express.Application) => {
     
     const service = new ShoppingService();
-    const userService = new UserService();
+   
 
-    app.post('/shopping/order',UserAuth, async (req:Request | any,res:Response,next:NextFunction) => {
+    app.post('/order',UserAuth, async (req:Request | any,res:Response,next:NextFunction) => {
 
         const { _id } = req.user;
         const { txnNumber } = req.body;
@@ -24,7 +23,7 @@ export const shopping = (app:express.Application) => {
 
     });
 
-    app.get('/shopping/orders',UserAuth, async (req:Request | any,res:Response,next:NextFunction) => {
+    app.get('/orders',UserAuth, async (req:Request | any,res:Response,next:NextFunction) => {
 
         const { _id } = req.user;
 
@@ -38,7 +37,7 @@ export const shopping = (app:express.Application) => {
     });
        
     
-    app.get('/shopping/cart', UserAuth, async (req:Request | any,res:Response,next:NextFunction) => {
+    app.get('/cart', UserAuth, async (req:Request | any,res:Response,next:NextFunction) => {
 
         const { _id } = req.user;
         try {

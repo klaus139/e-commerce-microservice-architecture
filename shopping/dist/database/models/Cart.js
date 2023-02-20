@@ -23,16 +23,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrderModel = void 0;
+exports.CartModel = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const OrderSchema = new mongoose_1.Schema({
-    orderId: String,
-    customerId: String,
-    amount: Number,
-    status: String,
-    txnId: String,
+const CartSchema = new mongoose_1.Schema({
+    customerId: { type: String },
     items: [
-        { product: {
+        {
+            product: {
                 _id: { type: String, require: true },
                 name: { type: String },
                 desc: { type: String },
@@ -43,14 +40,14 @@ const OrderSchema = new mongoose_1.Schema({
                 suplier: { type: String }
             },
             unit: { type: Number, require: true },
-        }
-    ]
+        },
+    ],
 }, {
     toJSON: {
         transform(doc, ret) {
             delete ret.__v;
-        }
+        },
     },
-    timestamps: true
+    timestamps: true,
 });
-exports.OrderModel = mongoose_1.default.model('order', OrderSchema);
+exports.CartModel = mongoose_1.default.model("cart", CartSchema);

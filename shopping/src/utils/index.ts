@@ -3,6 +3,7 @@ import { sign, verify } from "jsonwebtoken";
 import {Request} from 'express'
 
 import { APP_SECRET } from "../config";
+import axios from "axios";
 
 //Utility functions
 export async function GenerateSalt() {
@@ -50,3 +51,13 @@ export function FormateData(data: any) {
     throw new Error("Data Not found!");
   }
 }
+
+
+export const PublishCustomerEvent = async (payload: any)=> {
+  // perform new pipelines
+  axios.post('http://localhost:8000/customer/app-event', {
+    payload
+  })
+}
+
+
