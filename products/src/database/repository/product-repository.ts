@@ -1,16 +1,8 @@
 import { ProductModel } from "../models";
 import { APIError, STATUS_CODES } from '../../utils/app-errors';
+import { Iproduct } from "../../utils/interface";
 
-interface Iproduct {
-    name:string
-    desc: string,
-    banner: string,
-    type: string,
-    unit: number,
-    price: number,
-    available: boolean,
-    suplier: string
-}
+
 //Dealing with data base operations
 export class ProductRepository {
 

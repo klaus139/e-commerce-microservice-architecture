@@ -5,11 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.products = void 0;
 const product_service_1 = __importDefault(require("../services/product-service"));
-const customer_service_1 = __importDefault(require("../services/customer-service"));
+const utils_1 = require("../utils");
 const auth_1 = __importDefault(require("./middlewares/auth"));
 const products = (app) => {
     const service = new product_service_1.default();
-    const customerService = new customer_service_1.default();
     app.post('/product/create', async (req, res, next) => {
         try {
             const { name, desc, type, unit, price, available, suplier, banner } = req.body;
@@ -53,10 +52,11 @@ const products = (app) => {
     });
     app.put('/wishlist', auth_1.default, async (req, res, next) => {
         const { _id } = req.user;
+        //get payload to send to customer service
+        const { data } = await service.GetProductPayload(_id, { productId: req.body._id, qty: 1 }, 'ADD_TO_WISHLIST');
         try {
-            const product = await service.GetProductById(req.body._id);
-            const wishList = await customerService.AddToWishlist(_id, product);
-            return res.status(200).json(wishList);
+            (0, utils_1.PublishCustomerEvent)(data);
+            return res.status(200).json(data.data.product);
         }
         catch (err) {
         }
@@ -64,21 +64,27 @@ const products = (app) => {
     app.delete('/wishlist/:id', auth_1.default, async (req, res, next) => {
         const { _id } = req.user;
         const productId = req.params.id;
+        //get payload to send to customer service
+        const { data } = await service.GetProductPayload(_id, { productId, qty: 1 }, 'REMOVE_FROM_WISHLIST');
         try {
-            const product = await service.GetProductById(productId);
-            const wishlist = await customerService.AddToWishlist(_id, product);
-            return res.status(200).json(wishlist);
+            (0, utils_1.PublishCustomerEvent)(data);
+            return res.status(200).json(data.data.product);
         }
         catch (err) {
             next(err);
         }
     });
     app.put('/cart', auth_1.default, async (req, res, next) => {
-        const { _id, qty } = req.body;
+        const { _id } = req.user;
         try {
-            const product = await service.GetProductById(_id);
-            const result = await customerService.ManageCart(req.user._id, product, qty, false);
-            return res.status(200).json(result);
+            const { data } = await service.GetProductPayload(_id, { productId: req.body._id, qty: 1 }, 'ADD_TO_CART');
+            (0, utils_1.PublishCustomerEvent)(data);
+            (0, utils_1.PublishShoppingEvent)(data);
+            const response = {
+                product: data.data.product,
+                unit: data.data.qty
+            };
+            return res.status(200).json(response);
         }
         catch (err) {
             next(err);
@@ -86,10 +92,16 @@ const products = (app) => {
     });
     app.delete('/cart/:id', auth_1.default, async (req, res, next) => {
         const { _id } = req.user;
+        const { productId } = req.params.id;
         try {
-            const product = await service.GetProductById(req.params.id);
-            const result = await customerService.ManageCart(_id, product, 0, true);
-            return res.status(200).json(result);
+            const { data } = await service.GetProductPayload(_id, { productId: req.body._id, qty: 1 }, 'REMOVE_FROM_WISHLIST');
+            (0, utils_1.PublishCustomerEvent)(data);
+            (0, utils_1.PublishShoppingEvent)(data);
+            const response = {
+                product: data.data.product,
+                unit: data.data.qty
+            };
+            return res.status(200).json(response);
         }
         catch (err) {
             next(err);

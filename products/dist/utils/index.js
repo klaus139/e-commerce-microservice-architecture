@@ -1,8 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FormateData = exports.ValidateSignature = exports.GenerateSignature = exports.ValidatePassword = exports.GeneratePassword = exports.GenerateSalt = void 0;
+exports.PublishShoppingEvent = exports.PublishCustomerEvent = exports.FormateData = exports.ValidateSignature = exports.GenerateSignature = exports.ValidatePassword = exports.GeneratePassword = exports.GenerateSalt = void 0;
 const bcrypt_1 = require("bcrypt");
 const jsonwebtoken_1 = require("jsonwebtoken");
+const axios_1 = __importDefault(require("axios"));
 const config_1 = require("../config");
 //Utility functions
 async function GenerateSalt() {
@@ -50,3 +54,17 @@ function FormateData(data) {
     }
 }
 exports.FormateData = FormateData;
+const PublishCustomerEvent = async (payload) => {
+    // perform new pipelines
+    axios_1.default.post('http://localhost:8000/customer/app-event', {
+        payload
+    });
+};
+exports.PublishCustomerEvent = PublishCustomerEvent;
+const PublishShoppingEvent = async (payload) => {
+    // perform new pipelines
+    axios_1.default.post('http://localhost:8000/shopping/app-event', {
+        payload
+    });
+};
+exports.PublishShoppingEvent = PublishShoppingEvent;

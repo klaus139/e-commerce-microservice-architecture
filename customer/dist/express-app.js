@@ -13,10 +13,10 @@ const expressApp = async (app) => {
     app.use(express_1.default.urlencoded({ extended: true, limit: '1mb' }));
     app.use((0, cors_1.default)());
     app.use(express_1.default.static(__dirname + '/public'));
-    app.use((req, res, next) => {
-        console.log(req);
-        next();
-    });
+    // app.use((req: Request, res: Response, next: NextFunction) => {
+    //     console.log(req)
+    //     next()
+    // })
     //listen to events
     (0, api_1.appEvents)(app);
     //api

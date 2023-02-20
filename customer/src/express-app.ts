@@ -11,10 +11,10 @@ export const  expressApp = async (app:express.Application) => {
     app.use(cors());
     app.use(express.static(__dirname + '/public'))
 
-    app.use((req: Request, res: Response, next: NextFunction) => {
-        console.log(req)
-        next()
-    })
+    // app.use((req: Request, res: Response, next: NextFunction) => {
+    //     console.log(req)
+    //     next()
+    // })
 
     //listen to events
     appEvents(app);

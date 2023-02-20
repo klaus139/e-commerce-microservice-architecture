@@ -1,6 +1,7 @@
 import { genSalt, hash } from "bcrypt";
 import { sign, verify } from "jsonwebtoken";
 import {Request} from 'express'
+import axios from 'axios';
 
 import { APP_SECRET } from "../config";
 
@@ -49,4 +50,18 @@ export function FormateData(data: any) {
   } else {
     throw new Error("Data Not found!");
   }
+}
+
+export const PublishCustomerEvent = async (payload: any)=> {
+  // perform new pipelines
+  axios.post('http://localhost:8000/customer/app-event', {
+    payload
+  })
+}
+
+export const PublishShoppingEvent = async (payload: any) => {
+  // perform new pipelines
+  axios.post('http://localhost:8000/shopping/app-event', {
+    payload
+  })
 }

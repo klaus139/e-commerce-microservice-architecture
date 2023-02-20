@@ -69,5 +69,18 @@ class ProductService {
             throw new app_errors_1.APIError('API Error', app_errors_1.STATUS_CODES.INTERNAL_ERROR, 'Data Not found', true, '', true);
         }
     }
+    async GetProductPayload(userId, { productId, qty }, event) {
+        const product = await this.repository.FindById(productId);
+        if (product) {
+            const payload = {
+                event: event,
+                data: { userId, product, qty }
+            };
+            return (0, utils_1.FormateData)(payload);
+        }
+        else {
+            return (0, utils_1.FormateData)({ error: 'No Product available' });
+        }
+    }
 }
 exports.default = ProductService;

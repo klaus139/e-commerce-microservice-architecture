@@ -4,14 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.appEvents = void 0;
-const customer_service_1 = __importDefault(require("../services/customer-service"));
+const product_service_1 = __importDefault(require("../services/product-service"));
 const appEvents = (app) => {
-    const service = new customer_service_1.default();
+    const service = new product_service_1.default();
     app.use('/app-event', async (req, res, next) => {
         const { payload } = req.body;
-        service.SubscribeEvents(payload);
-        console.log('**========= Customer service received event =======**');
-        console.log(payload);
+        console.log('**========= Product service received event =======**');
+        //console.log(payload)
         return res.status(200).json(payload);
     });
 };
