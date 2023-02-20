@@ -8,7 +8,7 @@ const customer_service_1 = __importDefault(require("../services/customer-service
 const auth_1 = __importDefault(require("./middlewares/auth"));
 const customer = (app) => {
     const service = new customer_service_1.default();
-    app.post("/customer/signup", async (req, res, next) => {
+    app.post("/signup", async (req, res, next) => {
         try {
             const { email, password, phone } = req.body;
             const { data } = await service.SignUp({ email, password, phone });
@@ -18,7 +18,7 @@ const customer = (app) => {
             next(err);
         }
     });
-    app.post("/customer/login", async (req, res, next) => {
+    app.post("/login", async (req, res, next) => {
         try {
             const { email, password } = req.body;
             const { data } = await service.SignIn({ email, password });
@@ -28,7 +28,7 @@ const customer = (app) => {
             next(err);
         }
     });
-    app.post("/customer/address", auth_1.default, async (req, res, next) => {
+    app.post("/address", auth_1.default, async (req, res, next) => {
         try {
             const { _id } = req.user;
             const { street, postalCode, city, country } = req.body;
@@ -44,7 +44,7 @@ const customer = (app) => {
             next(err);
         }
     });
-    app.get("/customer/profile", auth_1.default, async (req, res, next) => {
+    app.get("/profile", auth_1.default, async (req, res, next) => {
         try {
             const { _id } = req.user;
             const { data } = await service.GetProfile({ _id });
@@ -54,7 +54,7 @@ const customer = (app) => {
             next(err);
         }
     });
-    app.get("/customer/shoping-details", auth_1.default, async (req, res, next) => {
+    app.get("/shoping-details", auth_1.default, async (req, res, next) => {
         try {
             const { _id } = req.user;
             const { data } = await service.GetShopingDetails(_id);
@@ -64,7 +64,7 @@ const customer = (app) => {
             next(err);
         }
     });
-    app.get("/customer/wishlist", auth_1.default, async (req, res, next) => {
+    app.get("/wishlist", auth_1.default, async (req, res, next) => {
         try {
             const { _id } = req.user;
             const { data } = await service.GetWishList(_id);
