@@ -19,21 +19,21 @@ const shopping = (app) => {
             next(err);
         }
     });
-    app.get('/orders', auth_1.default, async (req, res, next) => {
+    app.get("/orders", auth_1.default, async (req, res, next) => {
         const { _id } = req.user;
         try {
-            const { data } = await userService.GetShopingDetails(_id);
-            return res.status(200).json(data.orders);
+            const { data } = await service.GetOrders(_id);
+            return res.status(200).json(data);
         }
         catch (err) {
             next(err);
         }
     });
-    app.get('/cart', auth_1.default, async (req, res, next) => {
+    app.get("/cart", auth_1.default, async (req, res, next) => {
         const { _id } = req.user;
         try {
-            const { data } = await userService.GetShopingDetails(_id);
-            return res.status(200).json(data.cart);
+            const data = await service.GetCart(_id);
+            return res.status(200).json(data);
         }
         catch (err) {
             next(err);

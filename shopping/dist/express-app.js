@@ -13,9 +13,9 @@ const expressApp = async (app) => {
     app.use(express_1.default.urlencoded({ extended: true, limit: '1mb' }));
     app.use((0, cors_1.default)());
     app.use(express_1.default.static(__dirname + '/public'));
+    //listen to events
+    (0, api_1.appEvents)(app);
     //api
-    (0, api_1.customer)(app);
-    (0, api_1.products)(app);
     (0, api_1.shopping)(app);
     // error handling
     app.use(error_handler_1.default);

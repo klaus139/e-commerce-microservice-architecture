@@ -23,28 +23,33 @@ export const shopping = (app:express.Application) => {
 
     });
 
-    app.get('/orders',UserAuth, async (req:Request | any,res:Response,next:NextFunction) => {
-
-        const { _id } = req.user;
-
-        try {
-            const { data } = await userService.GetShopingDetails(_id);
-            return res.status(200).json(data.orders);
-        } catch (err) {
+    app.get(
+        "/orders",
+        UserAuth,
+        async (req: Request | any, res: Response, next: NextFunction) => {
+          const { _id } = req.user;
+    
+          try {
+            const { data } = await service.GetOrders(_id);
+            return res.status(200).json(data);
+          } catch (err) {
             next(err);
+          }
         }
-
-    });
+      );
        
     
-    app.get('/cart', UserAuth, async (req:Request | any,res:Response,next:NextFunction) => {
-
-        const { _id } = req.user;
-        try {
-            const { data } = await userService.GetShopingDetails(_id);
-            return res.status(200).json(data.cart);
-        } catch (err) {
+      app.get(
+        "/cart",
+        UserAuth,
+        async (req: Request | any, res: Response, next: NextFunction) => {
+          const { _id } = req.user;
+          try {
+            const data = await service.GetCart(_id);
+            return res.status(200).json(data);
+          } catch (err) {
             next(err);
+          }
         }
-    });
+      );
 }
