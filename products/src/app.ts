@@ -2,6 +2,7 @@ import express from 'express';
 import { PORT } from './config';
 import { databaseConnection } from './database';
 import {expressApp} from './express-app';
+import { CreateChannel } from './utils';
 
 const StartServer = async() => {
 
@@ -9,7 +10,8 @@ const StartServer = async() => {
     
     await databaseConnection();
     
-    await expressApp(app);
+    const channel = await CreateChannel();
+    await expressApp(app, channel);
 
     app.listen(PORT, () => {
         console.log(`listening to port ${PORT}`);

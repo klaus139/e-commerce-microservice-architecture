@@ -1,9 +1,10 @@
 import { genSalt, hash } from "bcrypt";
 import { sign, verify } from "jsonwebtoken";
 import {Request} from 'express'
-import axios from 'axios';
+import amqplib, { Channel, Connection } from 'amqplib';
 
-import { APP_SECRET } from "../config";
+
+import { APP_SECRET, EXCHANGE_NAME, MESSAGE_BROKER_URL } from "../config";
 
 //Utility functions
 export async function GenerateSalt() {
@@ -52,16 +53,38 @@ export function FormateData(data: any) {
   }
 }
 
-export const PublishCustomerEvent = async (payload: any)=> {
-  // perform new pipelines
-  axios.post('http://localhost:8000/customer/app-event', {
-    payload
-  })
+// message brokers
+
+//create a channel
+export const CreateChannel = async() => {
+  try {
+    const connection: Connection = await amqplib.connect(MESSAGE_BROKER_URL);
+    const channel: Channel = await connection.createChannel();
+    //distributor which is distributing our message to the queue
+    await channel.assertExchange(EXCHANGE_NAME, "direct",{ durable: true });
+    return channel;
+  } catch (err) {
+    throw err;
+  }
+};
+
+//publish message
+export const PublishMessage = async (channel: Channel, binding_key: string, message: any) => {
+ try{
+ channel.publish(EXCHANGE_NAME, binding_key, Buffer.from(message))
+} catch(err){
+  throw err
+}
 }
 
-export const PublishShoppingEvent = async (payload: any) => {
-  // perform new pipelines
-  axios.post('http://localhost:8000/shopping/app-event', {
-    payload
-  })
-}
+
+//subscribe message
+export const SubscribeMessage = async (channel:Channel, binding_key: string) => {
+  const appQueue = await channel.assertQueue('QUEUE_NAME');
+  channel.bindQueue(appQueue.queue, EXCHANGE_NAME, binding_key);
+  channel.consume(appQueue.queue, (data: any) => {
+    console.log("recieved data");
+    console.log(data.content.toString());
+    channel.ack(data);
+  });
+};

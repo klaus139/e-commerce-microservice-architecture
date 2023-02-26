@@ -1,9 +1,10 @@
+import { Channel } from 'amqplib';
 import ProductService from '../services/product-service';
 import { PublishCustomerEvent, PublishShoppingEvent } from '../utils';
 import UserAuth from './middlewares/auth';
 import express, {Request, Response, NextFunction} from 'express'
 
-export const products = (app:express.Application) => {
+export const products = (app:express.Application, channel: Channel) => {
     
     const service = new ProductService();
 
